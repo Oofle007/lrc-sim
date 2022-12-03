@@ -13,6 +13,7 @@ def simulate(no_players, no_games):
     next_target_percentage = 1
     all_games_length = []
     percentage_left = 0
+    completed_games = 0
     for i in range(no_games):  # Plays number of games
         players_cash = [3 for i in range(no_players)]
         center_cash = 0
@@ -53,7 +54,8 @@ def simulate(no_players, no_games):
                     if center_cash == (no_players * 3) - 1 or center_cash > no_players * 3:
                         all_games_length.append(all_rolls)
                         stop = True
-        percentage_left = round((len(all_games_length) / no_games) * 100, 2)
+        completed_games += 1
+        percentage_left = round((completed_games / no_games) * 100, 1)
         if percentage_left >= next_target_percentage and not next_target_percentage > 100:
             print(str(percentage_left) + "%")
             next_target_percentage += 1
