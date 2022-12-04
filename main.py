@@ -3,7 +3,6 @@ import statistics
 
 dice = [0, 0, 0, 1, 2, 3]
 
-
 # Keep = 0, left = 1, right = 2, center = 3
 
 def roll_dice():
@@ -35,7 +34,7 @@ def simulate(no_players, no_games, no_seconds):
                 no_rolls = 3
 
             all_rolls += 1
-            for i in range(no_rolls):  # Rolling no_rolls times
+            for j in range(no_rolls):  # Rolling no_rolls times
                 roll_result = roll_dice()
                 if roll_result == 1:  # Rolls Left
                     players_cash[current_player] -= 1
@@ -68,9 +67,10 @@ def simulate(no_players, no_games, no_seconds):
 
     return "\n" + "# Of Games Simulated: " + str(no_games) + "\n" + "# Of Players Per Game: " + str(
         no_players) + "\n" + "Time Spent Each Roll: " + str(no_seconds) + "s" + "\n" + "Average Rolls Per Game: " + str(
-        round(statistics.mean(all_times))) + "\n" + "Maximum Roll Game: " + str(
+        round(statistics.mean(all_games))) + "\n" + "Maximum Roll Game: " + str(
         max(all_games)) + "\n" + "Minimum Roll Game: " + str(min(all_games)) + "\n" + "Average Time Per Game: " + str(
         time)
 
 
-print(simulate(7, 10000, 1))  # Amount Of players, Amount of Games, Seconds Per Roll
+print(simulate(8, 100000, 10))  # Amount Of players, Amount of Games, Seconds Per Roll
+
