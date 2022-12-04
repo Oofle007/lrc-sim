@@ -48,6 +48,7 @@ def play_one_game(no_players, no_money, players):
 
 
 def simulate(no_players, no_games, no_seconds, no_money, players):
+    import time
     if len(players) < no_players:
         while len(players) < no_players:
             players.append("")
@@ -56,6 +57,7 @@ def simulate(no_players, no_games, no_seconds, no_money, players):
     all_times = []
     all_players_won = []
     completed_games = 0
+    start = time.perf_counter()
     for i in range(no_games):  # Plays number of games
         all_rolls = play_one_game(no_players, no_money, players)[0]
         all_players_won.append(play_one_game(no_players, no_money, players)[1])
@@ -64,13 +66,24 @@ def simulate(no_players, no_games, no_seconds, no_money, players):
         completed_games += 1
         percentage_left = round((completed_games / no_games) * 100, 1)  # Percent left in simulation
         if percentage_left >= next_target_percentage and not next_target_percentage > 100:  # Decides when to print %
-            print(str(percentage_left) + "%" + "Time Left: " +)
+            end = time.perf_counter()
+            time_left = (end - start) * (100 - percentage_left)
+            start = time.perf_counter()
+            sec = round(time_left)  # Average Seconds Per Game
+            timer = ""
+            if sec > 0:
+                for d, u in [(60, "second"), (60, "minute"), (24, "hour"), (sec, "day")]:
+                    sec, n = divmod(sec, d)
+                    if n: timer = f"{n} {u}" + "s" * (n > 1) + ", " * bool(timer) + timer
+            else:
+                timer = "0 seconds"
+            print(str(percentage_left) + "%" + " Time Left: " + str(timer))
             next_target_percentage += 1
     sec = round(statistics.mean(all_times))  # Average Seconds Per Game
-    time = ""
+    timer = ""
     for d, u in [(60, "second"), (60, "minute"), (24, "hour"), (sec, "day")]:
         sec, n = divmod(sec, d)
-        if n: time = f"{n} {u}" + "s" * (n > 1) + ", " * bool(time) + time
+        if n: timer = f"{n} {u}" + "s" * (n > 1) + ", " * bool(timer) + timer
     if max(set(all_players_won), key=all_players_won.count) == "":  # Finding player who won the most
         player_won = "None Specified"
     else:
@@ -80,11 +93,11 @@ def simulate(no_players, no_games, no_seconds, no_money, players):
         no_players) + "\n" + "Time Spent Each Roll: " + str(no_seconds) + "s" + "\n" + "Average Rolls Per Game: " + str(
         round(statistics.mean(all_games))) + "\n" + "Maximum Roll Game: " + str(
         max(all_games)) + "\n" + "Minimum Roll Game: " + str(min(all_games)) + "\n" + "Average Time Per Game: " + str(
-        time) + "\n" + "Player Who Won Most: " + player_won + ": " + str(times_won) + " Time(s)"
+        timer) + "\n" + "Player Who Won Most: " + player_won + ": " + str(times_won) + " Time(s)"
 
 no_players = 7
 no_games = 100000
-seconds_per_roll = 10
+seconds_per_roll = 15
 money_per_player = 3
 players = ["Aaron", "Alex", "Gage", "Mike", "Mikey", "Bach", "Barbara"]
 
