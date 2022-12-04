@@ -4,11 +4,6 @@ import statistics
 dice = [0, 0, 0, 1, 2, 3]  # Keep = 0, left = 1, right = 2, center = 3
 
 
-def roll_dice():
-    output = random.randint(0, 5)
-    return dice[output]
-
-
 def play_one_game(no_players, no_money, players):
     players_cash = [no_money for _ in range(no_players)]
     center_cash = 0
@@ -24,7 +19,8 @@ def play_one_game(no_players, no_money, players):
             no_rolls = 3
         all_rolls += 1  # Changing amount of rolls to return later
         for j in range(no_rolls):  # Rolling no_rolls times
-            roll_result = roll_dice()
+            output = random.randint(0, 5)
+            roll_result = dice[output]
             if roll_result == 1:  # Rolls Left
                 players_cash[current_player] -= 1
                 players_cash[current_player - 1] += 1
@@ -52,16 +48,19 @@ def simulate(no_players, no_games, no_seconds, no_money, players):
     if check_invalid_params((no_games, no_players, no_seconds)):
         return '\nAll inputs need a positive integer value'
     import time
+    starting = time.perf_counter()
     if len(players) < no_players:
         while len(players) < no_players:
             players.append("")
     next_target_percentage = 1
+    simulation_seconds_per_game = []
     all_games = []
     all_times = []
     all_players_won = []
     completed_games = 0
     start = time.perf_counter()
     for i in range(no_games):  # Plays number of games
+        started = time.perf_counter()
         all_rolls = play_one_game(no_players, no_money, players)[0]
         all_players_won.append(play_one_game(no_players, no_money, players)[1])
         all_games.append(all_rolls)
@@ -82,6 +81,8 @@ def simulate(no_players, no_games, no_seconds, no_money, players):
                 timer = "0 seconds"
             print(str(percentage_left) + "%" + " Time Left: " + str(timer))
             next_target_percentage += 1
+        ended = time.perf_counter()
+        simulation_seconds_per_game.append(ended - started)
     sec = round(statistics.mean(all_times))  # Average Seconds Per Game
     timer = ""
     for d, u in [(60, "second"), (60, "minute"), (24, "hour"), (sec, "day")]:
@@ -92,16 +93,19 @@ def simulate(no_players, no_games, no_seconds, no_money, players):
     else:
         player_won = max(set(all_players_won), key=all_players_won.count)
     times_won = all_players_won.count(player_won)
-    return "\n" + "# Of Games Simulated: " + str(no_games) + "\n" + "# Of Players Per Game: " + str(
-        no_players) + "\n" + "Time Spent Each Roll: " + str(no_seconds) + "s" + "\n" + "Average Rolls Per Game: " + str(
-        round(statistics.mean(all_games))) + "\n" + "Maximum Roll Game: " + str(
-        max(all_games)) + "\n" + "Minimum Roll Game: " + str(min(all_games)) + "\n" + "Average Time Per Game: " + str(
-        timer) + "\n" + "Player Who Won Most: " + player_won + ": " + str(times_won) + " Time(s)"
+    ending = time.perf_counter()
+    return "\n# Of Games Simulated: " + str(no_games) + "\n# Of Players Per Game: " + str(
+        no_players) + "\nTime Spent Each Roll: " + str(no_seconds) + "s\nAverage Rolls Per Game: " + str(
+        round(statistics.mean(all_games))) + "\nMaximum Roll Game: " + str(
+        max(all_games)) + "\nMinimum Roll Game: " + str(min(all_games)) + "\nAverage Time Per Game: " + str(
+        timer) + "\nPlayer Who Won Most: " + player_won + ": " + str(times_won) + " Time(s)\nSimulation Time: " + str(
+        round(ending - starting, 4)) + "s\nAverage Simulation Time Per Game: " + str(
+        round(statistics.mean(simulation_seconds_per_game), 8)) + "s"
 
 
 no_players = 7
-no_games = 1
-seconds_per_roll = 15
+no_games = 10000
+seconds_per_roll = 10
 money_per_player = 3
 players = ["Aaron", "Alex", "Gage", "Mike", "Mikey", "Bach", "Barbara"]
 
@@ -117,4 +121,3 @@ print(simulate(no_players, no_games, seconds_per_roll, money_per_player, players
 # the average rolls per game, maximum roll game, minimum roll game, and the average time taken each game (taking into
 # account the "seconds_per_roll" parameter. You can also put in the names of the players in the game, so you can see who
 # won the most.
-
